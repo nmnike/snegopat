@@ -14,6 +14,7 @@ exports.__esModule = true;
 var stdlib = require("./std/std");
 var git_common = require("./git_common");
 var openedForms = {};
+var pathToGitExtensions = "C:/Program Files (x86)/GitExtensions/GitExtensions.exe";
 global.connectGlobals(SelfScript);
 function macrosПоказатьBlame() {
     var wnd = snegopat.activeTextWindow();
@@ -46,6 +47,12 @@ function processBlame(mdObj, mdProp, title) {
         Message("Произошла ошибка git: " + res.err);
         return null;
     }
+    
+    var wsh = new ActiveXObject("Wscript.Shell");
+    var cmd = '"' + pathToGitExtensions + '" filehistory "' + fullPath;
+    wsh.Run(cmd, 1, 0);
+    return null;
+    
     var form = findOrLoadForm(mdObj, mdProp);
     form.Open();
     var blameText = blameToText(parseGitBlame(res.out));
@@ -76,6 +83,11 @@ function findOrLoadForm(mdObj, mdProp) {
             GotoModuleClose: function () {
                 this.GotoModule();
                 form.Close();
+            },
+            GitExtensionsHistory: function () {
+                var wsh = new ActiveXObject("Wscript.Shell");
+                var cmd = '"' + pathToGitExtensions + '" filehistory "' + form.data.fullPath;
+                wsh.Run(cmd, 1, 0);
             },
             OnClose: function () {
                 delete openedForms[key];
